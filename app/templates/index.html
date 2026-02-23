@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - TimetableAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-dark text-white p-5 rounded-2xl shadow-lg position-relative overflow-hidden border-0">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-4 font-weight-bold mb-3">Institutional Status</h1>
+                        <p class="lead opacity-8 mb-4">
+                            Review your current institutional data and solver performance.<br>
+                            To modify data or generate a new schedule, proceed to the management deck.
+                        </p>
+                        <div class="d-flex gap-3 mt-4">
+                            <a href="/manage"
+                                class="btn btn-warning btn-lg rounded-pill px-4 shadow-sm font-weight-bold mr-3">
+                                <i class="fas fa-tasks mr-2"></i> Manage Resources
+                            </a>
+                            <a href="/timetable" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                                <i class="fas fa-calendar-alt mr-2"></i> View Result
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <i class="fas fa-chart-line position-absolute"
+                    style="font-size: 15rem; right: -2rem; bottom: -2rem; opacity: 0.1; transform: rotate(-10deg);"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row mb-5">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm rounded-xl p-4 text-center">
+                <div class="text-muted small text-uppercase font-weight-bold mb-2">Total Faculty</div>
+                <div class="h2 font-weight-bold text-dark">{{ stats.faculty }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm rounded-xl p-4 text-center">
+                <div class="text-muted small text-uppercase font-weight-bold mb-2">Active Courses</div>
+                <div class="h2 font-weight-bold text-primary">{{ stats.courses }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm rounded-xl p-4 text-center">
+                <div class="text-muted small text-uppercase font-weight-bold mb-2">Rooms Available</div>
+                <div class="h2 font-weight-bold text-success">{{ stats.rooms }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm rounded-xl p-4 text-center">
+                <div class="text-muted small text-uppercase font-weight-bold mb-2">Total Subjects</div>
+                <div class="h2 font-weight-bold text-warning">{{ stats.subjects }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm rounded-2xl p-4 h-100">
+                <h5 class="font-weight-bold mb-3"><i class="fas fa-history text-primary mr-2"></i> Recent Activity</h5>
+                <div class="text-muted small">
+                    <p class="mb-2">Last solver score: <span class="badge badge-light-info text-info">
+                            {% for s in settings if s.key == 'LAST_SOLVER_SCORE' %}{{ s.value }}{% endfor %}
+                        </span></p>
+                    <p class="mb-0 text-muted">Go to the <b>Management</b> section to trigger a new computation or
+                        update your data catalogs.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm rounded-2xl p-4 h-100">
+                <h5 class="font-weight-bold mb-3"><i class="fas fa-lightbulb text-warning mr-2"></i> Quick Tips</h5>
+                <ul class="small text-muted pl-3 mb-0">
+                    <li>Add your labs as a separate room type for better specialization.</li>
+                    <li>Use the AI Smart Control in the Management page to set complex rules like "No classes on Monday
+                        mornings".</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-2xl {
+        border-radius: 2rem !important;
+    }
+
+    .rounded-xl {
+        border-radius: 1.25rem !important;
+    }
+
+    .opacity-8 {
+        opacity: 0.8 !important;
+    }
+
+    .card-header {
+        border-bottom: 0;
+    }
+
+    .bg-dark {
+        background-color: #1a1a1a !important;
+    }
+
+    #genMsg ul {
+        font-size: 0.9rem;
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    #genMsg li::before {
+        content: "⚠";
+        color: #ef4444;
+        margin-right: 8px;
+    }
+
+    .bg-light-soft {
+        background-color: #f8fafc;
+    }
+
+    .shadow-md {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+</style>
+
+<script>
+    // Generator Logic
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('generateBtn');
+        const msg = document.getElementById('genMsg');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Generating...';
+        msg.innerHTML = '<span class="text-white opacity-8">Solving constraints... This may take a few moments.</span>';
+
+        try {
+            const res = await fetch('/generate-timetable', { method: 'POST' });
+            const data = await res.json();
+
+            if (data.status === 'Success') {
+                msg.innerHTML = `<span class="text-warning">Success! Generated ${data.entries_generated} slots. Redirecting...</span>`;
+                setTimeout(() => window.location.href = '/timetable', 1500);
+            } else {
+                let errorHtml = `<span class="text-danger">Error: ${data.message || 'Unknown error'}</span>`;
+                if (data.reasons && data.reasons.length > 0) {
+                    errorHtml += '<div class="alert alert-danger mt-3 p-3 rounded-xl border-0 shadow-sm">';
+                    errorHtml += '<p class="font-weight-bold mb-2">Possible Bottlenecks:</p>';
+                    errorHtml += '<ul>';
+                    data.reasons.forEach(r => { errorHtml += `<li>${r}</li>`; });
+                    errorHtml += '</ul></div>';
+                }
+                msg.innerHTML = errorHtml;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-bolt mr-2"></i> Generate Timetable';
+            }
+        } catch (e) {
+            msg.innerHTML = `<span class="text-danger">Network Error</span>`;
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-bolt mr-2"></i> Generate Timetable';
+        }
+    });
+
+    // Settings Sync Logic
+    document.querySelectorAll('.setting-input').forEach(input => {
+        input.addEventListener('input', e => {
+            const key = e.target.dataset.key;
+            const valSpan = document.getElementById(`val-${key}`);
+            if (valSpan) {
+                if (e.target.type === 'checkbox') {
+                    valSpan.innerText = e.target.checked ? 'True' : 'False';
+                } else {
+                    valSpan.innerText = e.target.value;
+                }
+            }
+        });
+    });
+
+    document.getElementById('settings-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = {};
+        document.querySelectorAll('.setting-input').forEach(input => {
+            const key = input.dataset.key;
+            data[key] = input.type === 'checkbox' ? input.checked : input.value;
+        });
+
+        try {
+            const res = await fetch('/api/settings/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) { alert('Algorithm refined successfully!'); }
+        } catch (err) { alert('Failed to update settings'); }
+    });
+
+    // AI Control Logic
+    document.getElementById('apply-nlp').addEventListener('click', async () => {
+        const prompt = document.getElementById('nlp-prompt').value;
+        if (!prompt) return;
+
+        const btn = document.getElementById('apply-nlp');
+        const originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = 'Analyzing...';
+
+        try {
+            const res = await fetch('/api/settings/natural-language', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                if (data.status === 'redundant') {
+                    alert('✨ ' + data.message);
+                } else {
+                    alert('✅ ' + data.message);
+                    location.reload();
+                }
+            } else {
+                alert('❓ ' + (data.message || 'I couldn\'t understand that request.'));
+            }
+        } catch (err) { alert('Failed to process request'); }
+        finally { btn.disabled = false; btn.innerText = originalText; }
+    });
+</script>
+{% endblock %}

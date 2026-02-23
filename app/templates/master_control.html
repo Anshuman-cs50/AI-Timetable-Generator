@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 font-weight-bold text-gradient">Master Control</h1>
+            <p class="lead text-muted">Fine-tune your timetable scheduling algorithm with precision.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Manual Controls -->
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-lg border-0 rounded-2xl overflow-hidden mb-4">
+                <div class="card-header bg-dark text-white p-4">
+                    <h5 class="mb-0"><i class="fas fa-brain mr-2"></i> Algorithm Weights</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="settings-form">
+                        <div id="algorithm-settings">
+                            {% for setting in settings if 'LIMIT' not in setting.key and 'SOLVER' not in setting.key %}
+                            <div class="form-group mb-4">
+                                <label class="d-flex justify-content-between align-items-center">
+                                    <span class="font-weight-600">{{ setting.key.replace('_', ' ').title() }}</span>
+                                    <span class="badge badge-primary badge-pill px-3 py-2" id="val-{{ setting.key }}">{{
+                                        setting.value }}</span>
+                                </label>
+                                {% if setting.key == 'LECTURES_IN_LABS' %}
+                                <div class="custom-control custom-switch custom-switch-lg">
+                                    <input type="checkbox" class="custom-control-input setting-input"
+                                        id="{{ setting.key }}" {% if setting.value=='True' %}checked{% endif %}
+                                        data-key="{{ setting.key }}">
+                                    <label class="custom-control-label" for="{{ setting.key }}">Enable</label>
+                                </div>
+                                {% else %}
+                                <input type="range" class="custom-range setting-input" id="input-{{ setting.key }}"
+                                    min="0" max="1000" step="5" value="{{ setting.value }}"
+                                    data-key="{{ setting.key }}">
+                                {% endif %}
+                                <small class="form-text text-muted">{{ setting.description }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Data & Performance Controls -->
+            <div class="card shadow-lg border-0 rounded-2xl overflow-hidden">
+                <div class="card-header bg-secondary text-white p-4">
+                    <h5 class="mb-0"><i class="fas fa-server mr-2"></i> Data & Performance</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div id="performance-settings">
+                        {% for setting in settings if 'LIMIT' in setting.key or 'SOLVER' in setting.key %}
+                        <div class="form-group mb-4">
+                            <label class="font-weight-600">{{ setting.key.replace('_', ' ').title() }}</label>
+                            <input type="number" class="form-control rounded-xl setting-input"
+                                value="{{ setting.value }}" data-key="{{ setting.key }}">
+                            <small class="form-text text-muted">{{ setting.description }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" onclick="document.getElementById('settings-form-submit').click()"
+                        class="btn btn-primary btn-block btn-lg rounded-pill shadow-sm mt-4">
+                        <i class="fas fa-save mr-2"></i> Save All Changes
+                    </button>
+                    <!-- Hidden submit button for original form logic -->
+                    <button id="settings-form-submit" type="submit" form="settings-form" style="display:none;"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Natural Language Control -->
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0 rounded-2xl bg-gradient-primary text-white mb-4">
+                <div class="card-body p-4">
+                    <h5><i class="fas fa-magic mr-2"></i> Smart Control</h5>
+                    <p class="small opacity-8">Describe your preferences in plain english, and the system will
+                        auto-adjust the weights.</p>
+
+                    <div class="form-group">
+                        <textarea id="nlp-prompt" class="form-control border-0 rounded-xl p-3" rows="4"
+                            placeholder="e.g. 'Give more priority to faculty rest' or 'Make labs strictly consecutive'"></textarea>
+                    </div>
+                    <button id="apply-nlp" class="btn btn-light btn-block rounded-pill font-weight-bold text-primary">
+                        Apply Wisdom
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Card -->
+            <div class="card shadow-md border-0 rounded-2xl">
+                <div class="card-body p-4">
+                    <h6><i class="fas fa-info-circle mr-2 text-info"></i> How it works</h6>
+                    <p class="small text-muted mb-0">
+                        The solver uses these weights as penalties. Higher weights make the solver try harder to avoid
+                        that specific condition.
+                        <strong>Pro-tip:</strong> If you find no solution is being generated, try lowering the weights
+                        or toggling "Lectures in Labs".
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-2xl {
+        border-radius: 1.5rem !important;
+    }
+
+    .rounded-xl {
+        border-radius: 1rem !important;
+    }
+
+    .text-gradient {
+        background: linear-gradient(45deg, #2c3e50, #000000);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+    }
+
+    .opacity-8 {
+        opacity: 0.8;
+    }
+
+    .custom-switch-lg .custom-control-label::before {
+        height: 1.5rem;
+        width: 2.75rem;
+        border-radius: 1.5rem;
+    }
+
+    .custom-switch-lg .custom-control-label::after {
+        width: calc(1.5rem - 4px);
+        height: calc(1.5rem - 4px);
+        border-radius: 1.5rem;
+    }
+
+    .custom-switch-lg .custom-control-input:checked~.custom-control-label::after {
+        transform: translateX(1.25rem);
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.setting-input').forEach(input => {
+        input.addEventListener('input', e => {
+            const key = e.target.dataset.key;
+            const valSpan = document.getElementById(`val-${key}`);
+            if (e.target.type === 'checkbox') {
+                valSpan.innerText = e.target.checked ? 'True' : 'False';
+            } else {
+                valSpan.innerText = e.target.value;
+            }
+        });
+    });
+
+    document.getElementById('settings-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = {};
+        document.querySelectorAll('.setting-input').forEach(input => {
+            const key = input.dataset.key;
+            data[key] = input.type === 'checkbox' ? input.checked : input.value;
+        });
+
+        try {
+            const res = await fetch('/api/settings/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                alert('Settings updated successfully!');
+            }
+        } catch (err) {
+            alert('Failed to update settings');
+        }
+    });
+
+    document.getElementById('apply-nlp').addEventListener('click', async () => {
+        const prompt = document.getElementById('nlp-prompt').value;
+        if (!prompt) return;
+
+        const btn = document.getElementById('apply-nlp');
+        btn.disabled = true;
+        btn.innerText = 'Analyzing...';
+
+        try {
+            const res = await fetch('/api/settings/natural-language', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                alert('Settings auto-adjusted based on your request!');
+                location.reload(); // Simple reload to show values
+            }
+        } catch (err) {
+            alert('Failed to process request');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Apply Wisdom';
+        }
+    });
+</script>
+{% endblock %}

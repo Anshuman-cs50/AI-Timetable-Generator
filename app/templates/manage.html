@@ -1,0 +1,1240 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Data - TimetableAI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header Selection -->
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h1 class="font-weight-bold mb-1">Institution Data</h1>
+            <p class="text-muted mb-0">Manage your faculty, rooms, and subject catalogs.</p>
+        </div>
+        <div class="bg-white p-1 rounded-pill shadow-sm d-flex border">
+            <button onclick="switchTab('arch', this)"
+                class="btn btn-primary rounded-pill px-4 tab-btn active">Architecture</button>
+            <button onclick="switchTab('faculty', this)"
+                class="btn btn-light rounded-pill px-4 tab-btn">Faculty</button>
+            <button onclick="switchTab('rooms', this)" class="btn btn-light rounded-pill px-4 tab-btn">Rooms</button>
+            <button onclick="switchTab('subjects', this)"
+                class="btn btn-light rounded-pill px-4 tab-btn">Subjects</button>
+            <button onclick="switchTab('groups', this)" class="btn btn-light rounded-pill px-4 tab-btn">Groups</button>
+            <button onclick="switchTab('generate', this)"
+                class="btn btn-warning rounded-pill px-4 tab-btn font-weight-bold ml-2">
+                <i class="fas fa-bolt mr-1"></i> Generate
+            </button>
+        </div>
+    </div>
+
+    <!-- Architecture Tab -->
+    <div id="arch" class="tab-content animate-fade-in">
+        <div class="row">
+            <!-- Departments Column -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
+                    <div
+                        class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
+                        <h4 class="font-weight-bold mb-0"><i class="fas fa-university text-primary mr-2"></i>
+                            Departments</h4>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3"
+                                onclick="openImportModal('department')">
+                                <i class="fas fa-file-import mr-1"></i> Import
+                            </button>
+                            <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('deptForm')">
+                                <i class="fas fa-plus mr-1"></i> Add Dept
+                            </button>
+                        </div>
+                    </div>
+                    <div id="deptForm" class="p-4 bg-light mx-4 mb-4 rounded-xl shadow-inner border"
+                        style="display:none;">
+                        <form onsubmit="submitForm(event, '/api/department/add')" class="row">
+                            <div class="form-group col-md-8 mb-0">
+                                <input type="text" name="name" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                                    placeholder="e.g. Computer Science" required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary btn-block rounded-pill">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <table class="table table-hover mb-0" id="deptTable">
+                            <tbody id="deptBody">
+                                {% for d in data.departments %}
+                                <tr id="dept-row-{{ d.id }}">
+                                    <td class="align-middle font-weight-bold text-dark">{{ d.name }}</td>
+                                    <td class="text-right align-middle">
+                                        <button
+                                            onclick="deleteItem('/api/department/delete/{{ d.id }}', 'dept-row-{{ d.id }}')"
+                                            class="btn btn-link text-danger p-0">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Courses Column -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
+                    <div
+                        class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
+                        <h4 class="font-weight-bold mb-0"><i class="fas fa-graduation-cap text-success mr-2"></i>
+                            Courses</h4>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success btn-sm rounded-pill px-3"
+                                onclick="openImportModal('course')">
+                                <i class="fas fa-file-import mr-1"></i> Import
+                            </button>
+                            <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('courseForm')">
+                                <i class="fas fa-plus mr-1"></i> Add Course
+                            </button>
+                        </div>
+                    </div>
+                    <div id="courseForm" class="p-4 bg-light mx-4 mb-4 rounded-xl shadow-inner border"
+                        style="display:none;">
+                        <form onsubmit="submitForm(event, '/api/course/add')" class="row">
+                            <div class="form-group col-md-12 mb-3">
+                                <input type="text" name="name" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                                    placeholder="e.g. B.Tech CS" required>
+                            </div>
+                            <div class="form-group col-md-8 mb-0">
+                                <select name="department_id"
+                                    class="form-control rounded-pill px-3 border-0 shadow-sm custom-select" required>
+                                    <option value="">Select Department</option>
+                                    {% for d in data.departments %}
+                                    <option value="{{ d.id }}">{{ d.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary btn-block rounded-pill">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <table class="table table-hover mb-0" id="courseTable">
+                            <tbody id="courseBody">
+                                {% for c in data.courses %}
+                                <tr id="course-row-{{ c.id }}">
+                                    <td class="align-middle">
+                                        <div class="font-weight-bold text-dark">{{ c.name }}</div>
+                                        <div class="small text-muted">{{ c.department.name }}</div>
+                                    </td>
+                                    <td class="text-right align-middle">
+                                        <button
+                                            onclick="deleteItem('/api/course/delete/{{ c.id }}', 'course-row-{{ c.id }}')"
+                                            class="btn btn-link text-danger p-0">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Faculty Tab -->
+    <div id="faculty" class="tab-content animate-fade-in" style="display:none;">
+        <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
+            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-0"><i class="fas fa-users text-primary mr-2"></i> Faculty Members</h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3"
+                        onclick="openImportModal('faculty')">
+                        <i class="fas fa-file-import mr-1"></i> Import CSV
+                    </button>
+                    <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('facultyForm')">
+                        <i class="fas fa-plus mr-1"></i> Add Member
+                    </button>
+                </div>
+            </div>
+
+            <div id="facultyForm" class="p-4 bg-light mx-4 mb-4 rounded-xl shadow-inner border" style="display:none;">
+                <form onsubmit="submitForm(event, '/api/faculty/add')" class="row">
+                    <div class="form-group col-md-5 mb-3">
+                        <label class="small font-weight-bold text-muted">Full Name</label>
+                        <input type="text" name="name" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                            placeholder="e.g. Dr. Jane Smith" required>
+                    </div>
+                    <div class="form-group col-md-4 mb-3">
+                        <label class="small font-weight-bold text-muted">Department</label>
+                        <select name="department_id"
+                            class="form-control rounded-pill px-3 border-0 shadow-sm custom-select" required>
+                            <option value="">Select Department</option>
+                            {% for d in data.departments %}
+                            <option value="{{ d.id }}">{{ d.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        <label class="small font-weight-bold text-muted">Max Hrs / Wk</label>
+                        <input type="number" name="max_hours" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                            value="20">
+                    </div>
+                    <div class="col-md-12 text-right">
+                        <button type="submit" class="btn btn-primary rounded-pill px-5">Save Faculty</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive px-4 pb-4">
+                <table class="table table-hover mb-0" id="facultyTable">
+                    <thead class="text-muted small text-uppercase">
+                        <tr>
+                            <th class="border-top-0">Faculty Name</th>
+                            <th class="border-top-0">Weekly Load</th>
+                            <th class="border-top-0 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="facultyBody">
+                        {% if not data.faculty %}
+                        <tr class="empty-state">
+                            <td colspan="3" class="text-center py-5 text-muted">
+                                <i class="fas fa-users fa-3x mb-3 opacity-2"></i>
+                                <p>No faculty members added yet.</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% for f in data.faculty %}
+                        <tr id="faculty-row-{{ f.id }}">
+                            <td class="align-middle font-weight-bold text-dark">{{ f.name }}</td>
+                            <td class="align-middle"><span
+                                    class="badge badge-light-primary text-primary px-3 rounded-pill">{{
+                                    f.max_hours_per_week }} hrs</span></td>
+                            <td class="text-right align-middle">
+                                <button onclick="deleteItem('/api/faculty/delete/{{ f.id }}', 'faculty-row-{{ f.id }}')"
+                                    class="btn btn-link text-danger p-0 ml-2" title="Delete">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Groups Tab -->
+    <div id="groups" class="tab-content animate-fade-in" style="display:none;">
+        <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
+            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-0"><i class="fas fa-user-friends text-info mr-2"></i> Student Groups</h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-info btn-sm rounded-pill px-3" onclick="openImportModal('group')">
+                        <i class="fas fa-file-import mr-1"></i> Import CSV
+                    </button>
+                    <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('groupForm')">
+                        <i class="fas fa-plus mr-1"></i> Add Group
+                    </button>
+                </div>
+            </div>
+            <div id="groupForm" class="p-4 bg-light mx-4 mb-4 rounded-xl shadow-inner border" style="display:none;">
+                <form onsubmit="submitForm(event, '/api/group/add')" class="row">
+                    <div class="form-group col-md-4 mb-3">
+                        <label class="small font-weight-bold text-muted">Group Name</label>
+                        <input type="text" name="name" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                            placeholder="e.g. CS-A" required>
+                    </div>
+                    <div class="form-group col-md-4 mb-3">
+                        <label class="small font-weight-bold text-muted">Course</label>
+                        <select name="course_id" class="form-control rounded-pill px-3 border-0 shadow-sm custom-select"
+                            required>
+                            <option value="">Select Course</option>
+                            {% for c in data.courses %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2 mb-3">
+                        <label class="small font-weight-bold text-muted">Size</label>
+                        <input type="number" name="size" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                            value="60">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end mb-3">
+                        <button type="submit" class="btn btn-primary btn-block rounded-pill">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-responsive px-4 pb-4">
+                <table class="table table-hover mb-0" id="groupsTable">
+                    <thead class="text-muted small text-uppercase">
+                        <tr>
+                            <th class="border-top-0">Group Name</th>
+                            <th class="border-top-0">Course</th>
+                            <th class="border-top-0 text-center">Batch Size</th>
+                            <th class="border-top-0 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupsBody">
+                        {% for g in data.groups %}
+                        <tr id="group-row-{{ g.id }}">
+                            <td class="align-middle font-weight-bold text-dark">{{ g.name }}</td>
+                            <td class="align-middle text-muted">{{ g.course.name }}</td>
+                            <td class="align-middle text-center">{{ g.size }}</td>
+                            <td class="text-right align-middle">
+                                <button onclick="deleteItem('/api/group/delete/{{ g.id }}', 'group-row-{{ g.id }}')"
+                                    class="btn btn-link text-danger p-0">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="rooms" class="tab-content animate-fade-in" style="display:none;">
+        <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
+            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-0"><i class="fas fa-door-open text-success mr-2"></i> Facilities & Rooms
+                </h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="openImportModal('room')">
+                        <i class="fas fa-file-import mr-1"></i> Import CSV
+                    </button>
+                    <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('roomForm')">
+                        <i class="fas fa-plus mr-1"></i> Add Room
+                    </button>
+                </div>
+            </div>
+
+            <div id="roomForm" class="p-4 bg-light mx-4 mb-4 rounded-xl shadow-inner border" style="display:none;">
+                <form onsubmit="submitForm(event, '/api/room/add')" class="row">
+                    <div class="form-group col-md-4 mb-3">
+                        <label class="small font-weight-bold text-muted">Room Name / No</label>
+                        <input type="text" name="name" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                            placeholder="e.g. Hall 101" required>
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        <label class="small font-weight-bold text-muted">Capacity</label>
+                        <input type="number" name="capacity" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                            value="50">
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        <label class="small font-weight-bold text-muted">Room Type</label>
+                        <select name="type" class="form-control rounded-pill px-3 border-0 shadow-sm custom-select">
+                            <option value="lecture">Lecture Hall</option>
+                            <option value="lab">Laboratory</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end mb-3">
+                        <button type="submit" class="btn btn-primary btn-block rounded-pill">Save</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive px-4 pb-4">
+                <table class="table table-hover mb-0" id="roomsTable">
+                    <thead class="text-muted small text-uppercase">
+                        <tr>
+                            <th class="border-top-0">Room Name</th>
+                            <th class="border-top-0">Type</th>
+                            <th class="border-top-0 text-center">Capacity</th>
+                            <th class="border-top-0 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roomsBody">
+                        {% if not data.rooms %}
+                        <tr class="empty-state">
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-door-open fa-3x mb-3 opacity-2"></i>
+                                <p>No rooms added yet.</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% for r in data.rooms %}
+                        <tr id="room-row-{{ r.id }}">
+                            <td class="align-middle font-weight-bold text-dark">{{ r.name }}</td>
+                            <td class="align-middle">
+                                {% if r.type == 'lab' %}
+                                <span class="badge badge-light-warning text-warning px-3 rounded-pill">Laboratory</span>
+                                {% else %}
+                                <span class="badge badge-light-info text-info px-3 rounded-pill">Lecture Hall</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center align-middle font-weight-500">{{ r.capacity }}</td>
+                            <td class="text-right align-middle">
+                                <button onclick="deleteItem('/api/room/delete/{{ r.id }}', 'room-row-{{ r.id }}')"
+                                    class="btn btn-link text-danger p-0 ml-2">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subjects Tab -->
+    <div id="subjects" class="tab-content animate-fade-in" style="display:none;">
+        <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
+            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-0"><i class="fas fa-book-open text-warning mr-2"></i> Subject Catalog
+                </h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-warning btn-sm rounded-pill px-3"
+                        onclick="openImportModal('subject')">
+                        <i class="fas fa-file-import mr-1"></i> Import CSV
+                    </button>
+                    <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('subjectForm')">
+                        <i class="fas fa-plus mr-1"></i> Add Subject
+                    </button>
+                </div>
+            </div>
+
+            <div id="subjectForm" class="p-4 bg-light mx-4 mb-4 rounded-xl shadow-inner border" style="display:none;">
+                <form onsubmit="submitForm(event, '/api/subject/add')" class="row">
+                    <div class="form-group col-md-3 mb-3">
+                        <label class="small font-weight-bold text-muted">Subject Name</label>
+                        <input type="text" name="name" class="form-control rounded-pill px-3 border-0 shadow-sm"
+                            required>
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        <label class="small font-weight-bold text-muted">Faculty</label>
+                        <select name="faculty_id"
+                            class="form-control rounded-pill px-3 border-0 shadow-sm custom-select">
+                            <option value="">No Faculty Assigned</option>
+                            {% for f in data.faculty %}
+                            <option value="{{ f.id }}">{{ f.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3 mb-3">
+                        <label class="small font-weight-bold text-muted">Course Group</label>
+                        <select name="course_id"
+                            class="form-control rounded-pill px-3 border-0 shadow-sm custom-select">
+                            {% for c in data.courses %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-1 mb-3">
+                        <label class="small font-weight-bold text-muted">Hrs</label>
+                        <input type="number" name="hours"
+                            class="form-control rounded-pill px-2 border-0 shadow-sm text-center" value="3">
+                    </div>
+                    <div class="form-group col-md-2 mb-3 d-flex flex-column justify-content-end">
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input type="checkbox" name="is_lab" class="custom-control-input" id="isLabCheck">
+                            <label class="custom-control-label small" for="isLabCheck">Is Lab?</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block rounded-pill">Save</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive px-4 pb-4">
+                <table class="table table-hover mb-0 text-nowrap" id="subjectsTable">
+                    <thead class="text-muted small text-uppercase">
+                        <tr>
+                            <th class="border-top-0">Subject</th>
+                            <th class="border-top-0">Assigned Faculty</th>
+                            <th class="border-top-0">Hrs/Wk</th>
+                            <th class="border-top-0">Type</th>
+                            <th class="border-top-0 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectsBody">
+                        {% if not data.subjects %}
+                        <tr class="empty-state">
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-book-open fa-3x mb-3 opacity-2"></i>
+                                <p>No subjects added yet.</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% for s in data.subjects %}
+                        <tr id="subject-row-{{ s.id }}">
+                            <td class="align-middle font-weight-bold text-dark">{{ s.name }}</td>
+                            <td class="align-middle text-muted">{{ s.faculty.name if s.faculty else 'Unassigned' }}</td>
+                            <td class="align-middle">{{ s.hours_per_week }}</td>
+                            <td class="align-middle">
+                                {% if s.is_lab %}
+                                <span class="badge badge-light-danger text-danger px-3 rounded-pill">Lab Based</span>
+                                {% else %}
+                                <span class="badge badge-light-secondary text-secondary px-3 rounded-pill">Theory</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-right align-middle">
+                                <button onclick="deleteItem('/api/subject/delete/{{ s.id }}', 'subject-row-{{ s.id }}')"
+                                    class="btn btn-link text-danger p-0 ml-2">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate & Constraints Tab -->
+    <div id="generate" class="tab-content animate-fade-in" style="display:none;">
+        <div class="row">
+            <!-- Constraints Column -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
+                    <div class="card-header bg-primary text-white p-4">
+                        <h4 class="font-weight-bold mb-0"><i class="fas fa-toggle-on mr-2"></i> Constraint Library</h4>
+                    </div>
+                    <div class="card-body bg-light-soft p-4">
+                        <div class="row">
+                            {% for setting in settings if 'CONSTRAINT' in setting.key or setting.key ==
+                            'LECTURES_IN_LABS' %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 shadow-sm rounded-xl p-3 h-100">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input setting-input"
+                                            id="{{ setting.key }}" {% if setting.value=='True' %}checked{% endif %}
+                                            data-key="{{ setting.key }}">
+                                        <label class="custom-control-label font-weight-bold text-dark"
+                                            for="{{ setting.key }}">
+                                            {{ setting.key.replace('CONSTRAINT_', '').replace('_ENABLED',
+                                            '').replace('_', ' ').title() }}
+                                        </label>
+                                    </div>
+                                    <p class="small text-muted mb-0 mt-2">{{ setting.description }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="text-right">
+                            <button class="btn btn-primary rounded-pill px-5 shadow-sm" onclick="saveSettings()">
+                                <i class="fas fa-save mr-2"></i> Save Rules
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Computation Status / Actions -->
+                <div class="card border-0 shadow-md rounded-2xl p-5 text-center bg-dark text-white mb-4">
+                    <h2 class="font-weight-bold mb-3">Ready for Computation?</h2>
+                    <p class="opacity-8 mb-4">Click below to start the AI engine. The solver will find the best possible
+                        schedule based on your current data and rules.</p>
+                    <div class="timer-display mb-4" id="computeTimer" style="display:none;">
+                        <div class="h1 font-weight-bold text-warning mb-0" id="countdown">30</div>
+                        <div class="small text-uppercase opacity-6">Seconds Remaining</div>
+                    </div>
+                    <button id="startComputeBtn"
+                        class="btn btn-warning btn-lg rounded-pill px-5 py-3 font-weight-bold shadow-lg"
+                        onclick="startInference()">
+                        <i class="fas fa-play mr-2"></i> Start Computation
+                    </button>
+                    <div id="computeMsg" class="mt-4"></div>
+                </div>
+            </div>
+
+            <!-- AI Magic Column -->
+            <div class="col-lg-4">
+                <div class="card shadow-lg border-0 rounded-2xl bg-gradient-primary text-white mb-4">
+                    <div class="card-body p-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-magic fa-3x"></i>
+                        </div>
+                        <h4 class="font-weight-bold">AI Smart Control</h4>
+                        <p class="small opacity-8">Describe your institution's specific needs in plain language.</p>
+                        <textarea id="nlp-prompt" class="form-control border-0 rounded-xl p-3 mb-3" rows="4"
+                            placeholder="e.g. 'I want to prioritize faculty rest periods' or 'Avoid scheduling labs on Saturdays'"></textarea>
+                        <button id="apply-nlp"
+                            class="btn btn-light btn-block rounded-pill text-primary font-weight-bold py-2"
+                            onclick="applyNLP()">
+                            Apply Intelligence
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-2xl p-4 bg-light">
+                    <h6 class="font-weight-bold text-dark mb-3"><i class="fas fa-info-circle text-primary mr-2"></i>
+                        Workflow Help</h6>
+                    <ul class="small text-muted pl-3 mb-0">
+                        <li class="mb-2">Ensure all <b>Faculty</b>, <b>Rooms</b>, and <b>Subjects</b> are added first.
+                        </li>
+                        <li class="mb-2">Subjects must be assigned to Faculty members.</li>
+                        <li class="mb-2">The AI solver takes approx. 30 seconds to arrive at an optimal solution.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Import Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg rounded-2xl">
+                <div class="modal-header bg-light border-0 p-4">
+                    <h5 class="modal-title font-weight-bold" id="importModalLabel">Import Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Step 1: Upload -->
+                    <div id="importStepUpload">
+                        <div class="upload-zone rounded-2xl border-dashed p-5 text-center mb-4" id="dropZone"
+                            onclick="document.getElementById('universalCsvInput').click()" ondrop="handleDrop(event)"
+                            ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="font-weight-bold">Drag & Drop CSV File</h5>
+                            <p class="text-muted small">or click to browse from your computer</p>
+                            <input type="file" id="universalCsvInput" class="d-none" accept=".csv"
+                                onchange="handleFileSelect(event)">
+                            <button class="btn btn-primary rounded-pill px-4 mt-2">Browse Files</button>
+                        </div>
+
+                        <div class="card border-0 bg-light-soft rounded-xl p-3">
+                            <h6 class="font-weight-bold mb-2"><i class="fas fa-info-circle text-info mr-2"></i> Expected
+                                Format</h6>
+                            <p class="small text-muted mb-2">Please ensure your CSV has the following headers in any
+                                order:</p>
+                            <div id="formatGuide" class="bg-white p-2 rounded border small font-family-monospace mb-3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Preview & Edit -->
+                    <div id="importStepPreview" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h6 class="font-weight-bold mb-0">Preview & Edit Data</h6>
+                                <p class="small text-muted mb-0">Double click any cell to edit its value.</p>
+                            </div>
+                            <span class="badge badge-light-info text-info rounded-pill px-3 py-2" id="rowCountBadge">0
+                                Rows Found</span>
+                        </div>
+                        <div class="table-responsive rounded-xl border scrollbar-custom"
+                            style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-sm table-hover mb-0" id="previewTable">
+                                <thead class="bg-light sticky-top">
+                                    <tr id="previewHeaders"></tr>
+                                </thead>
+                                <tbody id="previewBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" id="finalizeImportBtn"
+                        style="display:none;" onclick="finalizeImport()">
+                        <i class="fas fa-check-circle mr-1"></i> Finalize Import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-2xl {
+        border-radius: 1.5rem !important;
+    }
+
+    .rounded-xl {
+        border-radius: 1rem !important;
+    }
+
+    .shadow-md {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .badge-light-primary {
+        background-color: #e0f2fe;
+    }
+
+    .badge-light-info {
+        background-color: #e0f2fe;
+    }
+
+    .badge-light-warning {
+        background-color: #fef3c7;
+    }
+
+    .badge-light-danger {
+        background-color: #fee2e2;
+    }
+
+    .badge-light-secondary {
+        background-color: #f1f5f9;
+    }
+
+    .custom-select {
+        border: none;
+    }
+
+    .tab-btn.active {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-3px);
+        transition: 0.3s;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    }
+
+    .opacity-6 {
+        opacity: 0.6;
+    }
+
+    .bg-light-soft {
+        background-color: #f8fafc;
+    }
+
+    .border-dashed {
+        border: 2px dashed #e2e8f0 !important;
+        transition: all 0.3s;
+    }
+
+    .upload-zone {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px dashed #e2e8f0;
+        background: #f8fafc;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+        border-color: #3b82f6 !important;
+        background-color: #eff6ff !important;
+        cursor: pointer;
+        transform: scale(1.01);
+    }
+
+    .scrollbar-custom::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 4px;
+    }
+
+    @keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    #previewTable td {
+        padding: 0.5rem;
+        vertical-align: middle;
+    }
+
+    .editable-cell:focus {
+        background-color: #fff;
+        outline: 2px solid #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+</style>
+
+<script>
+    function switchTab(tabId, btn) {
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('animate-fade-in');
+        });
+
+        const target = document.getElementById(tabId);
+        showSkeleton(target);
+
+        setTimeout(() => {
+            hideSkeleton(target);
+            target.style.display = 'block';
+            target.classList.add('animate-fade-in');
+        }, 400);
+
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('btn-primary', 'active');
+            b.classList.add('btn-light');
+        });
+        btn.classList.remove('btn-light');
+        btn.classList.add('btn-primary', 'active');
+    }
+
+    function showSkeleton(container) {
+        const tableBody = container.querySelector('tbody');
+        if (!tableBody || tableBody.querySelector('.empty-state')) return;
+
+        const originalRows = tableBody.innerHTML;
+        tableBody.dataset.original = originalRows;
+
+        const colCount = tableBody.closest('table').querySelectorAll('th').length;
+        let skeletonHtml = '';
+        for (let i = 0; i < 3; i++) {
+            skeletonHtml += `<tr>${Array(colCount).fill('<td><div class="skeleton" style="height:20px; width:100%"></div></td>').join('')}</tr>`;
+        }
+        tableBody.innerHTML = skeletonHtml;
+    }
+
+    function hideSkeleton(container) {
+        const tableBody = container.querySelector('tbody');
+        if (tableBody && tableBody.dataset.original) {
+            tableBody.innerHTML = tableBody.dataset.original;
+            delete tableBody.dataset.original;
+        }
+    }
+
+    function toggleForm(id) {
+        const el = document.getElementById(id);
+        $(el).slideToggle();
+    }
+
+    async function submitForm(e, url) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        try {
+            const res = await fetch(url, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.status === 'success') {
+                // Success feedback
+                submitBtn.classList.replace('btn-primary', 'btn-success');
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Saved';
+
+                // Add to DOM
+                appendItemToTable(url, data.item);
+
+                // Reset form after delay
+                setTimeout(() => {
+                    form.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
+                    submitBtn.classList.replace('btn-success', 'btn-primary');
+                    $(form.closest('.rounded-xl')).slideUp();
+                }, 1000);
+            } else {
+                alert('Error saving data: ' + (data.message || 'Unknown error'));
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+            }
+        } catch (err) {
+            alert('Network Error');
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+        }
+    }
+
+    function appendItemToTable(url, item) {
+        let rowHtml = '';
+        let bodyId = '';
+
+        if (url.includes('department')) {
+            bodyId = 'deptBody';
+            rowHtml = `
+                <tr id="dept-row-${item.id}" class="animate-fade-in">
+                    <td class="align-middle font-weight-bold text-dark">${item.name}</td>
+                    <td class="text-right align-middle">
+                        <button onclick="deleteItem('/api/department/delete/${item.id}', 'dept-row-${item.id}')" class="btn btn-link text-danger p-0"><i class="far fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
+        } else if (url.includes('course')) {
+            bodyId = 'courseBody';
+            rowHtml = `
+                <tr id="course-row-${item.id}" class="animate-fade-in">
+                    <td class="align-middle">
+                        <div class="font-weight-bold text-dark">${item.name}</div>
+                    </td>
+                    <td class="text-right align-middle">
+                        <button onclick="deleteItem('/api/course/delete/${item.id}', 'course-row-${item.id}')" class="btn btn-link text-danger p-0"><i class="far fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
+        } else if (url.includes('group')) {
+            bodyId = 'groupsBody';
+            rowHtml = `
+                <tr id="group-row-${item.id}" class="animate-fade-in">
+                    <td class="align-middle font-weight-bold text-dark">${item.name}</td>
+                    <td class="align-middle text-muted">-</td>
+                    <td class="align-middle text-center">${item.size}</td>
+                    <td class="text-right align-middle">
+                        <button onclick="deleteItem('/api/group/delete/${item.id}', 'group-row-${item.id}')" class="btn btn-link text-danger p-0"><i class="far fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
+        } else if (url.includes('faculty')) {
+            bodyId = 'facultyBody';
+            rowHtml = `
+                <tr id="faculty-row-${item.id}" class="animate-fade-in">
+                    <td class="align-middle font-weight-bold text-dark">${item.name}</td>
+                    <td class="align-middle"><span class="badge badge-light-primary text-primary px-3 rounded-pill">${item.max_hours_per_week} hrs</span></td>
+                    <td class="text-right align-middle">
+                        <button onclick="deleteItem('/api/faculty/delete/${item.id}', 'faculty-row-${item.id}')" class="btn btn-link text-danger p-0 ml-2"><i class="far fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
+        } else if (url.includes('room')) {
+            bodyId = 'roomsBody';
+            const badgeClass = item.type === 'lab' ? 'badge-light-warning text-warning' : 'badge-light-info text-info';
+            const typeLabel = item.type === 'lab' ? 'Laboratory' : 'Lecture Hall';
+            rowHtml = `
+                <tr id="room-row-${item.id}" class="animate-fade-in">
+                    <td class="align-middle font-weight-bold text-dark">${item.name}</td>
+                    <td class="align-middle"><span class="badge ${badgeClass} px-3 rounded-pill">${typeLabel}</span></td>
+                    <td class="text-center align-middle font-weight-500">${item.capacity}</td>
+                    <td class="text-right align-middle">
+                        <button onclick="deleteItem('/api/room/delete/${item.id}', 'room-row-${item.id}')" class="btn btn-link text-danger p-0 ml-2"><i class="far fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
+        } else if (url.includes('subject')) {
+            bodyId = 'subjectsBody';
+            const badgeClass = item.is_lab ? 'badge-light-danger text-danger' : 'badge-light-secondary text-secondary';
+            const typeLabel = item.is_lab ? 'Lab Based' : 'Theory';
+            rowHtml = `
+                <tr id="subject-row-${item.id}" class="animate-fade-in">
+                    <td class="align-middle font-weight-bold text-dark">${item.name}</td>
+                    <td class="align-middle text-muted">${item.faculty_name}</td>
+                    <td class="align-middle">${item.hours_per_week}</td>
+                    <td class="align-middle"><span class="badge ${badgeClass} px-3 rounded-pill">${typeLabel}</span></td>
+                    <td class="text-right align-middle">
+                        <button onclick="deleteItem('/api/subject/delete/${item.id}', 'subject-row-${item.id}')" class="btn btn-link text-danger p-0 ml-2"><i class="far fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
+        }
+
+        const body = document.getElementById(bodyId);
+        if (!body) {
+            console.error('Body ID not found:', bodyId);
+            return;
+        }
+        const emptyState = body.querySelector('.empty-state');
+        if (emptyState) emptyState.remove();
+
+        body.insertAdjacentHTML('afterbegin', rowHtml);
+
+        // Refresh page to update dropdowns in other forms if it's a structural element
+        if (url.includes('department') || url.includes('course')) {
+            setTimeout(() => location.reload(), 1500);
+        }
+    }
+
+    async function deleteItem(url, rowId) {
+        if (!confirm('This action cannot be undone. Delete item?')) return;
+        const row = document.getElementById(rowId);
+        row.style.opacity = '0.5';
+        row.style.pointerEvents = 'none';
+
+        try {
+            const res = await fetch(url, { method: 'POST' });
+            if (res.ok) {
+                $(row).fadeOut(400, function () {
+                    const body = this.parentNode;
+                    this.remove();
+                    if (body.children.length === 0) {
+                        checkEmptyStates();
+                    }
+                });
+            } else {
+                alert('Error deleting item');
+                row.style.opacity = '1';
+                row.style.pointerEvents = 'auto';
+            }
+        } catch (err) {
+            alert('Error deleting');
+            row.style.opacity = '1';
+            row.style.pointerEvents = 'auto';
+        }
+    }
+
+    function checkEmptyStates() {
+        const bodies = {
+            'deptBody': { icon: 'fa-university', text: 'No departments added yet.', cols: 2 },
+            'courseBody': { icon: 'fa-graduation-cap', text: 'No courses added yet.', cols: 2 },
+            'groupsBody': { icon: 'fa-user-friends', text: 'No groups added yet.', cols: 4 },
+            'facultyBody': { icon: 'fa-users', text: 'No faculty members added yet.', cols: 3 },
+            'roomsBody': { icon: 'fa-door-open', text: 'No rooms added yet.', cols: 4 },
+            'subjectsBody': { icon: 'fa-book-open', text: 'No subjects added yet.', cols: 5 }
+        };
+
+        for (const [id, config] of Object.entries(bodies)) {
+            const body = document.getElementById(id);
+            if (body && body.children.length === 0) {
+                body.innerHTML = `
+                    <tr class="empty-state">
+                        <td colspan="${config.cols}" class="text-center py-5 text-muted">
+                            <i class="fas ${config.icon} fa-3x mb-3 opacity-2"></i>
+                            <p>${config.text}</p>
+                        </td>
+                    </tr>`;
+            }
+        }
+    }
+    // --- Universal Import Logic ---
+    let currentImportType = '';
+    const formatExplanations = {
+        'department': 'Name',
+        'course': 'Name, Department',
+        'group': 'Name, Course, Size',
+        'faculty': 'Name, Department, Max Hours',
+        'room': 'Name, Capacity, Type (lecture/lab)',
+        'subject': 'Name, Course, Faculty, Hours, Is Lab (true/false)'
+    };
+
+    function openImportModal(type) {
+        currentImportType = type;
+        document.getElementById('importModalLabel').innerText = `Import ${type.charAt(0).toUpperCase() + type.slice(1)}s`;
+        document.getElementById('formatGuide').innerText = formatExplanations[type];
+
+        // Reset Modal State
+        document.getElementById('importStepUpload').style.display = 'block';
+        document.getElementById('importStepPreview').style.display = 'none';
+        document.getElementById('finalizeImportBtn').style.display = 'none';
+        document.getElementById('universalCsvInput').value = '';
+
+        $('#importModal').modal('show');
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        document.getElementById('dropZone').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+        document.getElementById('dropZone').classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        document.getElementById('dropZone').classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) processFile(files[0]);
+    }
+
+    function handleFileSelect(e) {
+        const files = e.target.files;
+        if (files.length) processFile(files[0]);
+    }
+
+    async function processFile(file) {
+        if (!file.name.endsWith('.csv')) {
+            alert('Please upload a valid CSV file.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', currentImportType);
+
+        const dropZone = document.getElementById('dropZone');
+        const originalContent = dropZone.innerHTML;
+        dropZone.innerHTML = '<i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i><h5 class="font-weight-bold">Analyzing file...</h5>';
+
+        try {
+            const res = await fetch('/api/import/preview', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                renderPreview(data.headers, data.data);
+                document.getElementById('importStepUpload').style.display = 'none';
+                document.getElementById('importStepPreview').style.display = 'block';
+                document.getElementById('finalizeImportBtn').style.display = 'inline-block';
+            } else {
+                alert(data.message);
+                dropZone.innerHTML = originalContent;
+            }
+        } catch (err) {
+            alert('Error processing file');
+            dropZone.innerHTML = originalContent;
+        }
+    }
+
+    function renderPreview(headers, rows) {
+        const headerRow = document.getElementById('previewHeaders');
+        const body = document.getElementById('previewBody');
+        document.getElementById('rowCountBadge').innerText = `${rows.length} Rows Found`;
+
+        headerRow.innerHTML = headers.map(h => `<th class="px-3 py-2 border-bottom">${h}</th>`).join('');
+
+        body.innerHTML = rows.map((row, idx) => `
+            <tr>
+                ${headers.map(h => {
+            // Match header case-insensitively with data keys
+            const key = Object.keys(row).find(k => k.toLowerCase().trim() === h.toLowerCase().trim());
+            const val = row[key] || '';
+            return `<td contenteditable="true" class="editable-cell px-3 py-2 border-bottom" data-header="${h}">${val}</td>`;
+        }).join('')}
+            </tr>
+        `).join('');
+    }
+
+    async function finalizeImport() {
+        const btn = document.getElementById('finalizeImportBtn');
+        const rows = Array.from(document.querySelectorAll('#previewBody tr'));
+        const headers = Array.from(document.querySelectorAll('#previewHeaders th')).map(th => th.innerText);
+
+        const data = rows.map(tr => {
+            const item = {};
+            Array.from(tr.querySelectorAll('td')).forEach((td, idx) => {
+                item[headers[idx]] = td.innerText.trim();
+            });
+            return item;
+        });
+
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving...';
+
+        try {
+            const res = await fetch('/api/import/finalize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: currentImportType, data: data })
+            });
+            const result = await res.json();
+
+            if (result.status === 'success') {
+                alert(`Successfully imported ${result.count} items!`);
+                location.reload();
+            } else {
+                alert('Import failed: ' + result.message);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        } catch (err) {
+            alert('Network error');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+    async function saveSettings() {
+        const body = {};
+        document.querySelectorAll('.setting-input').forEach(input => {
+            const key = input.dataset.key;
+            body[key] = input.type === 'checkbox' ? input.checked : input.value;
+        });
+
+        try {
+            const res = await fetch('/api/settings/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (res.ok) alert('Settings saved successfully!');
+        } catch (err) { alert('Failed to save settings'); }
+    }
+
+    async function applyNLP() {
+        const prompt = document.getElementById('nlp-prompt').value;
+        if (!prompt) return;
+
+        const btn = document.getElementById('apply-nlp');
+        const originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = 'Analyzing...';
+
+        try {
+            const res = await fetch('/api/settings/natural-language', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                if (data.status === 'redundant') {
+                    alert('✨ ' + data.message);
+                } else {
+                    alert('✅ ' + data.message);
+                    location.reload();
+                }
+            } else {
+                alert('❓ ' + (data.message || 'I couldn\'t understand that request.'));
+            }
+        } catch (err) { alert('Failed to process request'); }
+        finally { btn.disabled = false; btn.innerText = originalText; }
+    }
+
+    let computeInterval;
+    async function startInference() {
+        const btn = document.getElementById('startComputeBtn');
+        const timerDiv = document.getElementById('computeTimer');
+        const countdown = document.getElementById('countdown');
+        const msg = document.getElementById('computeMsg');
+
+        btn.disabled = true;
+        btn.classList.add('d-none');
+        timerDiv.style.display = 'block';
+        msg.innerHTML = '<span class="text-warning">Running simulation... Please wait.</span>';
+
+        let seconds = 30;
+        countdown.innerText = seconds;
+
+        computeInterval = setInterval(() => {
+            seconds--;
+            if (seconds >= 0) countdown.innerText = seconds;
+        }, 1000);
+
+        try {
+            const res = await fetch('/generate-timetable', { method: 'POST' });
+            const data = await res.json();
+
+            clearInterval(computeInterval);
+
+            if (data.status === 'Success') {
+                msg.innerHTML = `<span class="text-success h5 font-weight-bold">Success! Generated ${data.entries_generated} entries. Redirecting...</span>`;
+                setTimeout(() => window.location.href = '/timetable', 1000);
+            } else {
+                timerDiv.style.display = 'none';
+                btn.classList.remove('d-none');
+                btn.disabled = false;
+
+                let errorHtml = `<span class="text-danger h5 font-weight-bold">Computation Failed</span><br><span class="small opacity-8">${data.message || 'Unknown error'}</span>`;
+                if (data.reasons && data.reasons.length > 0) {
+                    errorHtml += '<div class="alert alert-light mt-3 p-3 text-dark text-left rounded-xl shadow-inner">';
+                    errorHtml += '<p class="font-weight-bold small mb-2">Possible Bottlenecks:</p><ul class="small mb-0">';
+                    data.reasons.forEach(r => { errorHtml += `<li>${r}</li>`; });
+                    errorHtml += '</ul></div>';
+                }
+                msg.innerHTML = errorHtml;
+            }
+        } catch (err) {
+            clearInterval(computeInterval);
+            timerDiv.style.display = 'none';
+            btn.classList.remove('d-none');
+            btn.disabled = false;
+            msg.innerHTML = '<span class="text-danger">Communication Error</span>';
+        }
+    }
+</script>
+{% endblock %}

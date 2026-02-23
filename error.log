@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\Users\Anshuman Singh\OneDrive\Desktop\Projects\Automatic Timetable generator (CSP)\app\routes.py", line 110, in generate
+    status_name = solver.StatusName(status) if hasattr(solver, 'StatusName') else str(status)
+NameError: name 'solver' is not defined

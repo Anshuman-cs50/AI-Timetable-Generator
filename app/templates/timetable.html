@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block title %}Timetable Grid - TimetableAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- View Header & Controls -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="font-weight-bold mb-1">Academic Routine</h1>
+            <p class="text-muted mb-0">Interactive, conflict-free scheduling grid.</p>
+        </div>
+        <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm border">
+            <div class="input-group input-group-sm mr-2" style="width: 200px;">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-transparent border-0 text-muted"><i
+                            class="fas fa-filter"></i></span>
+                </div>
+                <select id="filterType" onchange="updateFilterOptions()"
+                    class="custom-select border-0 bg-transparent font-weight-500">
+                    <option value="all">View All Groups</option>
+                    <option value="group">Target Group</option>
+                    <option value="faculty">Faculty Schedule</option>
+                    <option value="room">Room Availability</option>
+                </select>
+            </div>
+
+            <select id="filterValue" onchange="applyFilter()"
+                class="custom-select border-0 bg-transparent font-weight-500 mr-3" style="width: 180px; display:none;">
+                <option value="">Select...</option>
+            </select>
+
+            <button onclick="window.print()"
+                class="btn btn-dark btn-sm rounded-pill px-4 font-weight-bold shadow-sm h-100">
+                <i class="fas fa-print mr-2"></i> Print Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Grids -->
+    {% for group_name, schedule in grouped_schedule.items() %}
+    <div class="card border-0 shadow-md rounded-2xl mb-4 overflow-hidden institution-card">
+        <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 letter-spacing-1"><i class="fas fa-layer-group text-info mr-2"></i> {{ group_name }}</h5>
+            <div class="d-flex align-items-center">
+                {% if score == 0 %}
+                <span class="small opacity-9 mr-3 mt-1 unselectable text-success font-weight-bold">
+                    <i class="fas fa-gem mr-1"></i> Perfect Optimization (0.0)
+                </span>
+                <i class="fas fa-check-circle text-success mt-1"></i>
+                {% elif score < 100 %} <span class="small opacity-9 mr-3 mt-1 unselectable text-info font-weight-bold">
+                    <i class="fas fa-certificate mr-1"></i> Excellent Quality ({{ score }})
+                    </span>
+                    <i class="fas fa-check-circle text-info mt-1"></i>
+                    {% elif score < 500 %} <span
+                        class="small opacity-9 mr-3 mt-1 unselectable text-primary font-weight-bold">
+                        <i class="fas fa-check-double mr-1"></i> High Compatibility ({{ score }})
+                        </span>
+                        <i class="fas fa-check-circle text-primary mt-1"></i>
+                        {% else %}
+                        <span class="small opacity-9 mr-3 mt-1 unselectable text-warning font-weight-bold">
+                            <i class="fas fa-adjust mr-1"></i> Suboptimal Load ({{ score }})
+                        </span>
+                        <i class="fas fa-exclamation-circle text-warning mt-1"></i>
+                        {% endif %}
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 grid-table">
+                    <thead>
+                        <tr>
+                            <th class="time-header text-center align-middle bg-light border-bottom-0">
+                                <span class="small text-uppercase font-weight-bold text-muted">Time Grid</span>
+                            </th>
+                            {% for day in days %}
+                            <th class="text-center align-middle py-2 border-bottom-0">
+                                <span class="d-block font-weight-bold text-dark small">{{ day }}</span>
+                                <span class="x-small text-muted text-uppercase letter-spacing-1"
+                                    style="font-size: 0.6rem;">Session</span>
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in slots %}
+                        <tr>
+                            <td class="bg-light text-center align-middle border-right py-1">
+                                <div class="font-weight-bold text-dark mb-0 small">Slot {{ slot }}</div>
+                                <div class="x-small text-muted" style="font-size: 0.65rem;">{{ (8 + slot) }}:00 - {{ (9
+                                    + slot) }}:00</div>
+                            </td>
+                            {% for day in days %}
+                            {% set entry = schedule[day][slot] %}
+                            <td class="p-1 align-middle cell-container" style="min-width: 160px; height: 85px;">
+                                {% if entry %}
+                                <div class="schedule-entry h-100 p-2 rounded-xl border-0 shadow-sm transition d-flex flex-column justify-content-between"
+                                    data-type="{{ 'lab' if 'lab' in entry.subject.lower() or 'lab' in entry.room.lower() else 'theory' }}">
+                                    <div>
+                                        <div class="entry-subject font-weight-bold mb-0 truncate"
+                                            style="font-size: 0.85rem;">{{ entry.subject }}</div>
+                                        <div class="entry-faculty x-small text-muted truncate">
+                                            <i class="fas fa-id-badge mr-1 opacity-5"></i> {{ entry.faculty }}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-end mt-1">
+                                        <span class="entry-room badge px-2 py-0 rounded-pill x-small">
+                                            <i class="fas fa-map-marker-alt mr-1"></i> {{ entry.room }}
+                                        </span>
+                                        <i class="fas fa-info-circle text-muted x-small opacity-3 cursor-pointer"></i>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div
+                                    class="h-100 rounded-xl border-dashed d-flex align-items-center justify-content-center text-muted-extra small">
+                                    <span class="opacity-3 italic unselectable">Recess / Free</span>
+                                </div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .rounded-2xl {
+        border-radius: 1.5rem !important;
+    }
+
+    .rounded-xl {
+        border-radius: 1rem !important;
+    }
+
+    .shadow-md {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .letter-spacing-1 {
+        letter-spacing: 1px;
+    }
+
+    .x-small {
+        font-size: 0.7rem;
+    }
+
+    .unselectable {
+        user-select: none;
+    }
+
+    .grid-table th {
+        border-color: #f1f5f9;
+        background: #fff;
+    }
+
+    .grid-table td {
+        border-color: #f1f5f9;
+        position: relative;
+    }
+
+    .schedule-entry {
+        background: white;
+        border: 1px solid #f1f5f9 !important;
+        cursor: default;
+    }
+
+    .schedule-entry[data-type="theory"] {
+        border-left: 5px solid #0ea5e9 !important;
+    }
+
+    .schedule-entry[data-type="lab"] {
+        border-left: 5px solid #f59e0b !important;
+    }
+
+    .schedule-entry:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+        z-index: 10;
+        background: #fff;
+    }
+
+    .entry-subject {
+        color: #1e293b;
+        font-size: 0.85rem;
+    }
+
+    .entry-faculty {
+        font-size: 0.7rem;
+    }
+
+    .entry-room {
+        background: #f8fafc;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .schedule-entry[data-type="theory"] .entry-room {
+        color: #0284c7;
+        background: #e0f2fe;
+    }
+
+    .schedule-entry[data-type="lab"] .entry-room {
+        color: #b45309;
+        background: #fef3c7;
+    }
+
+    .border-dashed {
+        border: 2px dashed #f1f5f9;
+    }
+
+    .text-muted-extra {
+        color: #cbd5e1;
+    }
+
+    .cell-container:hover .border-dashed {
+        border-color: #e2e8f0;
+    }
+
+    @media print {
+
+        .navbar,
+        .btn,
+        #filterType,
+        #filterValue,
+        .card-header .small {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+        }
+
+        .institution-card {
+            box-shadow: none !important;
+            border: 1px solid #e2e8f0 !important;
+            page-break-after: always;
+        }
+
+        .schedule-entry {
+            box-shadow: none !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+    }
+</style>
+
+<script>
+    const filterOptions = {
+        group: [
+            {% for g in filter_options.groups %}
+    { id: { { g.id } }, name: "{{ g.name }}" },
+    {% endfor %}
+        ],
+    faculty: [
+        {% for f in filter_options.faculty %}
+    { id: { { f.id } }, name: "{{ f.name }}" },
+    {% endfor %}
+        ],
+    room: [
+        {% for r in filter_options.rooms %}
+    { id: { { r.id } }, name: "{{ r.name }}" },
+    {% endfor %}
+        ]
+    };
+
+    const currentFilter = {{ current_filter | tojson }};
+
+    function updateFilterOptions() {
+        const type = document.getElementById('filterType').value;
+        const valueSelect = document.getElementById('filterValue');
+
+        valueSelect.innerHTML = '<option value="">Select Target...</option>';
+
+        if (type === 'all') {
+            valueSelect.style.display = 'none';
+            if (currentFilter.type && currentFilter.type !== 'all') {
+                window.location.href = '/timetable';
+            }
+            return;
+        }
+
+        valueSelect.style.display = 'inline-block';
+
+        const options = filterOptions[type] || [];
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.id;
+            option.textContent = opt.name;
+            if (currentFilter.type === type && currentFilter.value === opt.id) {
+                option.selected = true;
+            }
+            valueSelect.appendChild(option);
+        });
+    }
+
+    function applyFilter() {
+        const type = document.getElementById('filterType').value;
+        const value = document.getElementById('filterValue').value;
+        if (type && value) {
+            window.location.href = `/timetable?type=${type}&value=${value}`;
+        }
+    }
+
+    // Initialize
+    if (currentFilter.type) {
+        document.getElementById('filterType').value = currentFilter.type;
+        updateFilterOptions();
+    }
+</script>
+{% endblock %}
