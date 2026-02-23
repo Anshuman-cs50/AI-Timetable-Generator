@@ -1,18 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Blue Timetable Icon -->
-  <rect x="2" y="4" width="28" height="24" rx="4" fill="#2563eb" />
-  <!-- Grid horizontal lines -->
-  <line x1="2" y1="12" x2="30" y2="12" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
-  <line x1="2" y1="20" x2="30" y2="20" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
-  <!-- Grid vertical lines -->
-  <line x1="11.3" y1="4" x2="11.3" y2="28" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
-  <line x1="20.6" y1="4" x2="20.6" y2="28" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
+  <rect x="2" y="4" width="28" height="24" rx="3" fill="#2563eb" />
   
-  <!-- Filled timetable blocks for visual interest -->
-  <rect x="3.5" y="5.5" width="6.3" height="5" rx="1.5" fill="white" fill-opacity="0.15" />
-  <rect x="12.8" y="13.5" width="6.3" height="5" rx="1.5" fill="white" fill-opacity="0.15" />
+  <text x="4" y="9" font-family="Arial, sans-serif" font-size="2.5" fill="white" font-weight="bold">MON</text>
+  <text x="13" y="9" font-family="Arial, sans-serif" font-size="2.5" fill="white" font-weight="bold">TUE</text>
+  <text x="22" y="9" font-family="Arial, sans-serif" font-size="2.5" fill="white" font-weight="bold">WED</text>
   
-  <!-- Gemini Style 4-pointed Star (Black) at bottom-right -->
-  <!-- Design: 4-pointed star with sharp inward curves -->
-  <path d="M26 20c0 3.314-2.686 6-6 6 3.314 0 6 2.686 6 6 0-3.314 2.686-6 6-6-3.314 0-6-2.686-6-6z" fill="#000000" />
+  <line x1="2" y1="11" x2="30" y2="11" stroke="white" stroke-width="0.5" stroke-opacity="0.3" />
+  <line x1="2" y1="19" x2="30" y2="19" stroke="white" stroke-width="0.5" stroke-opacity="0.3" />
+
+  <rect x="3.5" y="12.5" width="7" height="5" rx="1" fill="white" fill-opacity="0.2" />
+  <text x="4.5" y="15.5" font-family="Arial, sans-serif" font-size="2" fill="white">MATH</text>
+  
+  <rect x="12.5" y="12.5" width="7" height="5" rx="1" fill="white" fill-opacity="0.2" />
+  <text x="13.2" y="15.5" font-family="Arial, sans-serif" font-size="2" fill="white">HIST</text>
+  
+  <rect x="21.5" y="12.5" width="7" height="5" rx="1" fill="white" fill-opacity="0.2" />
+  <text x="22.2" y="15.5" font-family="Arial, sans-serif" font-size="2" fill="white">SCI</text>
+
+  <text x="4" y="23" font-family="Arial, sans-serif" font-size="1.8" fill="white" fill-opacity="0.8">09:00</text>
+  <text x="13" y="23" font-family="Arial, sans-serif" font-size="1.8" fill="white" fill-opacity="0.8">11:00</text>
+  <text x="22" y="23" font-family="Arial, sans-serif" font-size="1.8" fill="white" fill-opacity="0.8">13:00</text>
+
+  <path d="M26 22c0 2-1.5 3.5-3.5 3.5 2 0 3.5 1.5 3.5 3.5 0-2 1.5-3.5 3.5-3.5-2 0-3.5-1.5-3.5-3.5z" fill="#000000" />
 </svg>
