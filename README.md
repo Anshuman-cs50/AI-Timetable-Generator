@@ -46,7 +46,7 @@ A powerful, automatic timetable generation system built with **Flask** and **Goo
 4. **Initialize the Database**:
    ```bash
    # The application will automatically create instance/timetable.db on first run
-   python run.py
+   python app.py
    ```
 
 5. **Access the App**:
@@ -56,7 +56,24 @@ A powerful, automatic timetable generation system built with **Flask** and **Goo
 
 1. **Data Onboarding**: Start by adding your **Departments** and **Courses** in the **Architecture** tab.
 2. **Setup Groups & Faculty**: Add **Student Groups** to your courses and **Faculty Members** to your departments.
+## 🚀 Deployment (Vercel + Supabase)
+
+This project is configured for one-click deployment to Vercel with a Supabase PostgreSQL backend.
+
+### 1. Database Setup (Supabase)
+- Create a new project on [Supabase](https://supabase.com).
+- Go to **Project Settings** > **Database** and copy the **URI** (Transaction connection string).
+
+### 2. Vercel Configuration
+- Push your code to a GitHub repository.
+- Import the project into [Vercel](https://vercel.com).
+- Add the following **Environment Variables** in the Vercel dashboard:
+    - `DATABASE_URL`: Your Supabase connection string.
+    - `SECRET_KEY`: A long random string for session security.
+
+### 3. Finalize
+- Vercel will automatically build and deploy the app using the `vercel.json` configuration.
+- The system will run `db.create_all()` on the first request to initialize your Supabase schema.
 3. **Define Subjects**: Create a subject catalog, specifying if it's a "Lab" or "Theory" and assigning the appropriate faculty.
 4. **Generate**: Go to the **Generate** tab and hit the computation button. The AI will take approximately 30 seconds to arrive at an optimal solution.
 5. **View Timetable**: Once generated, view the full weekly grid in the **Timetable** section.
-
