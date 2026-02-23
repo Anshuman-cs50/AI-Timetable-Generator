@@ -573,72 +573,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Universal Import Modal -->
-    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow-lg rounded-2xl">
-                <div class="modal-header bg-light border-0 p-4">
-                    <h5 class="modal-title font-weight-bold" id="importModalLabel">Import Data</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body p-4">
-                    <!-- Step 1: Upload -->
-                    <div id="importStepUpload">
-                        <div class="upload-zone rounded-2xl border-dashed p-5 text-center mb-4" id="dropZone"
-                            onclick="document.getElementById('universalCsvInput').click()" ondrop="handleDrop(event)"
-                            ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
-                            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
-                            <h5 class="font-weight-bold">Drag & Drop CSV File</h5>
-                            <p class="text-muted small">or click to browse from your computer</p>
-                            <input type="file" id="universalCsvInput" class="d-none" accept=".csv"
-                                onchange="handleFileSelect(event)">
-                            <button class="btn btn-primary rounded-pill px-4 mt-2">Browse Files</button>
-                        </div>
-
-                        <div class="card border-0 bg-light-soft rounded-xl p-3">
-                            <h6 class="font-weight-bold mb-2"><i class="fas fa-info-circle text-info mr-2"></i> Expected
-                                Format</h6>
-                            <p class="small text-muted mb-2">Please ensure your CSV has the following headers in any
-                                order:</p>
-                            <div id="formatGuide" class="bg-white p-2 rounded border small font-family-monospace mb-3">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Preview & Edit -->
-                    <div id="importStepPreview" style="display:none;">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                                <h6 class="font-weight-bold mb-0">Preview & Edit Data</h6>
-                                <p class="small text-muted mb-0">Double click any cell to edit its value.</p>
-                            </div>
-                            <span class="badge badge-light-info text-info rounded-pill px-3 py-2" id="rowCountBadge">0
-                                Rows Found</span>
-                        </div>
-                        <div class="table-responsive rounded-xl border scrollbar-custom"
-                            style="max-height: 400px; overflow-y: auto;">
-                            <table class="table table-sm table-hover mb-0" id="previewTable">
-                                <thead class="bg-light sticky-top">
-                                    <tr id="previewHeaders"></tr>
-                                </thead>
-                                <tbody id="previewBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 p-4">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" id="finalizeImportBtn"
-                        style="display:none;" onclick="finalizeImport()">
-                        <i class="fas fa-check-circle mr-1"></i> Finalize Import
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <style>
@@ -762,6 +696,19 @@
         background-color: #fff;
         outline: 2px solid #3b82f6;
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Modal Alignment Fix */
+    .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - (1.75rem * 2));
+    }
+
+    @media (max-width: 576px) {
+        .modal-dialog-centered {
+            min-height: calc(100% - (0.5rem * 2));
+        }
     }
 </style>
 
@@ -1237,4 +1184,71 @@
         }
     }
 </script>
+
+<!-- Universal Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 9999;">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg rounded-2xl overflow-hidden">
+            <div class="modal-header bg-light border-0 p-4">
+                <h5 class="modal-title font-weight-bold" id="importModalLabel">Import Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Step 1: Upload -->
+                <div id="importStepUpload">
+                    <div class="upload-zone rounded-2xl border-dashed p-5 text-center mb-4" id="dropZone"
+                        onclick="document.getElementById('universalCsvInput').click()" ondrop="handleDrop(event)"
+                        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                        <h5 class="font-weight-bold">Drag & Drop CSV File</h5>
+                        <p class="text-muted small">or click to browse from your computer</p>
+                        <input type="file" id="universalCsvInput" class="d-none" accept=".csv"
+                            onchange="handleFileSelect(event)">
+                        <button class="btn btn-primary rounded-pill px-4 mt-2">Browse Files</button>
+                    </div>
+
+                    <div class="card border-0 bg-light-soft rounded-xl p-3">
+                        <h6 class="font-weight-bold mb-2"><i class="fas fa-info-circle text-info mr-2"></i> Expected
+                            Format</h6>
+                        <p class="small text-muted mb-2">Please ensure your CSV has the following headers in any
+                            order:</p>
+                        <div id="formatGuide" class="bg-white p-2 rounded border small font-family-monospace mb-3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Preview & Edit -->
+                <div id="importStepPreview" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="font-weight-bold mb-0">Preview & Edit Data</h6>
+                            <p class="small text-muted mb-0">Double click any cell to edit its value.</p>
+                        </div>
+                        <span class="badge badge-light-info text-info rounded-pill px-3 py-2" id="rowCountBadge">0
+                            Rows Found</span>
+                    </div>
+                    <div class="table-responsive rounded-xl border scrollbar-custom"
+                        style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-sm table-hover mb-0" id="previewTable">
+                            <thead class="bg-light sticky-top">
+                                <tr id="previewHeaders"></tr>
+                            </thead>
+                            <tbody id="previewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" id="finalizeImportBtn"
+                    style="display:none;" onclick="finalizeImport()">
+                    <i class="fas fa-check-circle mr-1"></i> Finalize Import
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

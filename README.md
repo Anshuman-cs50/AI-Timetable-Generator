@@ -60,9 +60,3 @@ A powerful, automatic timetable generation system built with **Flask** and **Goo
 4. **Generate**: Go to the **Generate** tab and hit the computation button. The AI will take approximately 30 seconds to arrive at an optimal solution.
 5. **View Timetable**: Once generated, view the full weekly grid in the **Timetable** section.
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-*Built with ❤️ for educational efficiency.*
