@@ -467,7 +467,7 @@ def delete_room(id):
 
 @main.route('/api/subject/add', methods=['POST'])
 @login_required
-def add_subject():
+def add_subject(): 
     name = request.form.get('name')
     course_id = request.form.get('course_id')
     faculty_id = request.form.get('faculty_id')
