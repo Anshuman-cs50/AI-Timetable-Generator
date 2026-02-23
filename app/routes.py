@@ -21,7 +21,7 @@ def index():
         _seed_demo_data()
 
     # Fetch stats for the logged-in user
-    stats = {
+    stats = { 
         'faculty': Faculty.query.filter_by(user_id=current_user.id).count(),
         'courses': Course.query.filter_by(user_id=current_user.id).count(),
         'rooms': Room.query.filter_by(user_id=current_user.id).count(),
@@ -338,60 +338,81 @@ def import_preview():
 def import_finalize():
     data = request.json.get('data')
     entity_type = request.json.get('type')
+    mode = request.json.get('mode', 'append')
     
     if not data or not entity_type:
         return jsonify({"status": "error", "message": "Missing data or type"}), 400
 
     try:
         count = 0
+        if mode == 'replace':
+            if entity_type == 'department':
+                Department.query.filter_by(user_id=current_user.id).delete()
+            elif entity_type == 'course':
+                Course.query.filter_by(user_id=current_user.id).delete()
+            elif entity_type == 'group':
+                StudentGroup.query.filter_by(user_id=current_user.id).delete()
+            elif entity_type == 'faculty':
+                Faculty.query.filter_by(user_id=current_user.id).delete()
+            elif entity_type == 'room':
+                Room.query.filter_by(user_id=current_user.id).delete()
+            elif entity_type == 'subject':
+                Subject.query.filter_by(user_id=current_user.id).delete()
+
         if entity_type == 'department':
+            existing = {d.name.lower(): d for d in Department.query.filter_by(user_id=current_user.id).all()}
             for row in data:
                 name = row.get('Name') or row.get('name')
-                if name:
+                if name and name.lower() not in existing:
                     db.session.add(Department(name=name, user_id=current_user.id))
                     count += 1
         
         elif entity_type == 'course':
             depts = {d.name.lower(): d.id for d in Department.query.filter_by(user_id=current_user.id).all()}
+            existing = {c.name.lower(): c for c in Course.query.filter_by(user_id=current_user.id).all()}
             for row in data:
                 name = row.get('Name') or row.get('name')
                 dept_name = (row.get('Department') or row.get('department') or "").lower().strip()
-                if name and dept_name in depts:
+                if name and dept_name in depts and name.lower() not in existing:
                     db.session.add(Course(name=name, department_id=depts[dept_name], user_id=current_user.id))
                     count += 1
 
         elif entity_type == 'group':
             courses = {c.name.lower(): c.id for c in Course.query.filter_by(user_id=current_user.id).all()}
+            existing = {g.name.lower(): g for g in StudentGroup.query.filter_by(user_id=current_user.id).all()}
             for row in data:
                 name = row.get('Name') or row.get('name')
                 course_name = (row.get('Course') or row.get('course') or "").lower().strip()
                 size = row.get('Size') or row.get('size') or 60
-                if name and course_name in courses:
+                if name and course_name in courses and name.lower() not in existing:
                     db.session.add(StudentGroup(name=name, course_id=courses[course_name], size=size, user_id=current_user.id))
                     count += 1
 
         elif entity_type == 'faculty':
             depts = {d.name.lower(): d.id for d in Department.query.filter_by(user_id=current_user.id).all()}
+            existing = {f.name.lower(): f for f in Faculty.query.filter_by(user_id=current_user.id).all()}
             for row in data:
                 name = row.get('Name') or row.get('name')
                 dept_name = (row.get('Department') or row.get('department') or "").lower().strip()
                 hours = row.get('Max Hours') or row.get('hours') or 20
-                if name and dept_name in depts:
+                if name and dept_name in depts and name.lower() not in existing:
                     db.session.add(Faculty(name=name, department_id=depts[dept_name], max_hours_per_week=hours, user_id=current_user.id))
                     count += 1
 
         elif entity_type == 'room':
+            existing = {r.name.lower(): r for r in Room.query.filter_by(user_id=current_user.id).all()}
             for row in data:
                 name = row.get('Name') or row.get('name')
                 cap = row.get('Capacity') or row.get('capacity') or 50
                 rtype = (row.get('Type') or row.get('type') or 'lecture').lower()
-                if name:
+                if name and name.lower() not in existing:
                     db.session.add(Room(name=name, capacity=cap, type=rtype, user_id=current_user.id))
                     count += 1
 
         elif entity_type == 'subject':
             courses = {c.name.lower(): c.id for c in Course.query.filter_by(user_id=current_user.id).all()}
             faculty = {f.name.lower(): f.id for f in Faculty.query.filter_by(user_id=current_user.id).all()}
+            existing = {s.name.lower(): s for s in Subject.query.filter_by(user_id=current_user.id).all()}
             for row in data:
                 name = row.get('Name') or row.get('name')
                 course_name = (row.get('Course') or row.get('course') or "").lower().strip()
@@ -399,7 +420,7 @@ def import_finalize():
                 hours = row.get('Hours') or row.get('hours') or 3
                 lab = str(row.get('Is Lab') or row.get('is_lab') or "").lower() == 'true'
                 
-                if name and course_name in courses:
+                if name and course_name in courses and name.lower() not in existing:
                     s = Subject(
                         name=name, 
                         course_id=courses[course_name], 

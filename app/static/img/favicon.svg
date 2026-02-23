@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Blue Timetable Icon -->
+  <rect x="2" y="4" width="28" height="24" rx="4" fill="#2563eb" />
+  <!-- Grid horizontal lines -->
+  <line x1="2" y1="12" x2="30" y2="12" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
+  <line x1="2" y1="20" x2="30" y2="20" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
+  <!-- Grid vertical lines -->
+  <line x1="11.3" y1="4" x2="11.3" y2="28" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
+  <line x1="20.6" y1="4" x2="20.6" y2="28" stroke="white" stroke-width="1.5" stroke-opacity="0.2" />
+  
+  <!-- Filled timetable blocks for visual interest -->
+  <rect x="3.5" y="5.5" width="6.3" height="5" rx="1.5" fill="white" fill-opacity="0.15" />
+  <rect x="12.8" y="13.5" width="6.3" height="5" rx="1.5" fill="white" fill-opacity="0.15" />
+  
+  <!-- Gemini Style 4-pointed Star (Black) at bottom-right -->
+  <!-- Design: 4-pointed star with sharp inward curves -->
+  <path d="M26 20c0 3.314-2.686 6-6 6 3.314 0 6 2.686 6 6 0-3.314 2.686-6 6-6-3.314 0-6-2.686-6-6z" fill="#000000" />
+</svg>
