@@ -26,6 +26,12 @@ def create_app(config_class=Config):
         def load_user(user_id):
             return User.query.get(int(user_id))
             
-        db.create_all()
+        try:
+            db.create_all()
+            print("Database initialized successfully.")
+        except Exception as e:
+            print(f"Error during database initialization: {e}")
+            # On serverless, we might want to continue and let it fail on-route 
+            # instead of crashing the entire function startup
 
     return app

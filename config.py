@@ -3,6 +3,10 @@ import os
 class Config:
     # Use DATABASE_URL for Supabase/Heroku/Vercel, fallback to SQLite locally
     uri = os.environ.get('DATABASE_URL') or 'sqlite:///timetable.db'
+    
+    if uri.startswith("https://"):
+        raise ValueError("DATABASE_URL must be a postgresql connection string, not an HTTPS API URL. Please check your Supabase Database settings.")
+
     if uri.startswith("postgres://"):
         uri = uri.replace("postgres://", "postgresql://", 1)
     
