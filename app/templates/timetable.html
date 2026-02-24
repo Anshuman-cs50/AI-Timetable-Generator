@@ -5,35 +5,38 @@
 {% block content %}
 <div class="container-fluid py-4">
     <!-- View Header & Controls -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6 mb-3 mb-md-0">
             <h1 class="font-weight-bold mb-1">Academic Routine</h1>
             <p class="text-muted mb-0">Interactive, conflict-free scheduling grid.</p>
         </div>
-        <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm border">
-            <div class="input-group input-group-sm mr-2" style="width: 200px;">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-transparent border-0 text-muted"><i
-                            class="fas fa-filter"></i></span>
+        <div class="col-md-6 d-flex justify-content-md-end overflow-hidden">
+            <div class="d-flex align-items-center bg-white p-2 rounded-pill shadow-sm border scroll-tabs">
+                <div class="input-group input-group-sm mr-2" style="width: 200px; min-width: 200px;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-transparent border-0 text-muted"><i
+                                class="fas fa-filter"></i></span>
+                    </div>
+                    <select id="filterType" onchange="updateFilterOptions()"
+                        class="custom-select border-0 bg-transparent font-weight-500">
+                        <option value="all">View All Groups</option>
+                        <option value="group">Target Group</option>
+                        <option value="faculty">Faculty Schedule</option>
+                        <option value="room">Room Availability</option>
+                    </select>
                 </div>
-                <select id="filterType" onchange="updateFilterOptions()"
-                    class="custom-select border-0 bg-transparent font-weight-500">
-                    <option value="all">View All Groups</option>
-                    <option value="group">Target Group</option>
-                    <option value="faculty">Faculty Schedule</option>
-                    <option value="room">Room Availability</option>
+
+                <select id="filterValue" onchange="applyFilter()"
+                    class="custom-select border-0 bg-transparent font-weight-500 mr-3"
+                    style="width: 180px; min-width: 180px; display:none;">
+                    <option value="">Select...</option>
                 </select>
+
+                <button onclick="window.print()"
+                    class="btn btn-dark btn-sm rounded-pill px-4 font-weight-bold shadow-sm h-100 flex-shrink-0">
+                    <i class="fas fa-print mr-2"></i> Print
+                </button>
             </div>
-
-            <select id="filterValue" onchange="applyFilter()"
-                class="custom-select border-0 bg-transparent font-weight-500 mr-3" style="width: 180px; display:none;">
-                <option value="">Select...</option>
-            </select>
-
-            <button onclick="window.print()"
-                class="btn btn-dark btn-sm rounded-pill px-4 font-weight-bold shadow-sm h-100">
-                <i class="fas fa-print mr-2"></i> Print Report
-            </button>
         </div>
     </div>
 
@@ -67,6 +70,9 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
+                <div class="p-2 bg-light border-bottom d-md-none text-center x-small text-muted">
+                    <i class="fas fa-arrows-alt-h mr-1"></i> Scroll horizontally to view the full week
+                </div>
                 <table class="table table-bordered mb-0 grid-table">
                     <thead>
                         <tr>
@@ -245,6 +251,19 @@
             box-shadow: none !important;
             border: 1px solid #e2e8f0 !important;
         }
+    }
+
+    .scroll-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .scroll-tabs::-webkit-scrollbar {
+        display: none;
     }
 </style>
 

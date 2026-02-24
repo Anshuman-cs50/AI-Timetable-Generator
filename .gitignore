@@ -152,3 +152,4 @@ error.log
 brain/
 scenarios/
 test_csvs/
+db_init.py

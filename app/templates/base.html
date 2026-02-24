@@ -24,23 +24,40 @@
         }
 
         .navbar {
-            background-color: var(--navbar-bg) !important;
-            padding: 1rem 2rem;
+            background-color: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0.85rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            transition: transform 0.2s;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.02);
         }
 
         .nav-link {
             color: rgba(255, 255, 255, 0.7) !important;
             font-weight: 500;
-            transition: color 0.2s;
-            margin-left: 1rem;
+            transition: all 0.2s;
+            margin-left: 0.75rem;
+            border-radius: 50px;
+            padding: 0.5rem 1rem !important;
         }
 
         .nav-link:hover {
             color: var(--accent-color) !important;
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .nav-link.active {
             color: white !important;
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--accent-color) !important;
         }
 
         .rounded-2xl {
@@ -59,6 +76,118 @@
         .letter-spacing-1 {
             letter-spacing: 1px;
         }
+
+        .border-lg-0 {
+            border: 0 !important;
+        }
+
+        @media (max-width: 991px) {
+            .border-lg-0 {
+                border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            }
+
+            .navbar {
+                padding: 0.65rem 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .navbar-collapse {
+                padding: 1rem 0 0.5rem 0;
+            }
+
+            .nav-link {
+                margin-left: 0;
+                margin-bottom: 0.25rem;
+                font-size: 1rem;
+                padding-left: 0.75rem !important;
+            }
+
+            .navbar-toggler {
+                padding: 0.25rem;
+                outline: none !important;
+            }
+        }
+
+        /* Responsive Typography */
+        h1,
+        .display-1,
+        .display-2,
+        .display-3,
+        .display-4 {
+            line-height: 1.1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.1rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+            }
+
+            h5 {
+                font-size: 1.15rem;
+            }
+
+            .display-1 {
+                font-size: 3.2rem;
+            }
+
+            .display-2 {
+                font-size: 2.8rem;
+            }
+
+            .display-3 {
+                font-size: 2.3rem;
+            }
+
+            .display-4 {
+                font-size: 2.0rem;
+            }
+
+            .lead {
+                font-size: 1.05rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.7rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .display-3 {
+                font-size: 1.90rem;
+            }
+
+            .display-4 {
+                font-size: 1.7rem;
+            }
+
+            .lead {
+                font-size: 1rem !important;
+            }
+
+            .badge {
+                font-size: 0.75rem;
+            }
+
+            .btn-lg {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.95rem;
+            }
+        }
     </style>
 </head>
 
@@ -72,19 +201,20 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <div class="navbar-nav ml-auto align-items-center">
-                <a href="/" class="nav-item nav-link">Home</a>
+            <div class="navbar-nav ml-auto align-items-lg-center">
+                <a href="/" class="nav-item nav-link py-2 py-lg-0">Home</a>
                 {% if current_user.is_authenticated %}
-                <a href="/manage" class="nav-item nav-link">Manage Data</a>
-                <a href="/timetable" class="nav-item nav-link">Timetable View</a>
-                <div class="nav-item ml-4 d-flex align-items-center">
-                    <span class="text-white-50 small mr-3"><i class="fas fa-university mr-1"></i> {{
+                <a href="/manage" class="nav-item nav-link py-2 py-lg-0">Manage Data</a>
+                <a href="/timetable" class="nav-item nav-link py-2 py-lg-0">Timetable View</a>
+                <div
+                    class="nav-item mt-4 mt-lg-0 ml-lg-4 pt-3 pt-lg-0 border-top border-secondary border-lg-0 d-flex justify-content-between align-items-center mobile-user-info">
+                    <span class="text-white-50 small"><i class="fas fa-university mr-2"></i> {{
                         current_user.username }}</span>
-                    <a href="/logout" class="btn btn-outline-light btn-sm rounded-pill px-3">Logout</a>
+                    <a href="/logout" class="btn btn-outline-light btn-sm rounded-pill px-3 ml-3">Logout</a>
                 </div>
                 {% else %}
-                <a href="/login" class="nav-item nav-link">Login</a>
-                <a href="/register" class="btn btn-info btn-sm rounded-pill px-4 ml-3">Get Started</a>
+                <a href="/login" class="nav-item nav-link py-2 py-lg-0">Login</a>
+                <a href="/register" class="btn btn-info btn-sm rounded-pill px-4 mt-3 mt-lg-0 ml-lg-3">Get Started</a>
                 {% endif %}
             </div>
         </div>

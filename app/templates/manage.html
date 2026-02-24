@@ -5,24 +5,28 @@
 {% block content %}
 <div class="container py-5">
     <!-- Header Selection -->
-    <div class="d-flex justify-content-between align-items-end mb-5">
-        <div>
+    <div class="row align-items-end mb-5">
+        <div class="col-lg-4 mb-3 mb-lg-0">
             <h1 class="font-weight-bold mb-1">Institution Data</h1>
             <p class="text-muted mb-0">Manage your faculty, rooms, and subject catalogs.</p>
         </div>
-        <div class="bg-white p-1 rounded-pill shadow-sm d-flex border">
-            <button onclick="switchTab('arch', this)"
-                class="btn btn-primary rounded-pill px-4 tab-btn active">Architecture</button>
-            <button onclick="switchTab('faculty', this)"
-                class="btn btn-light rounded-pill px-4 tab-btn">Faculty</button>
-            <button onclick="switchTab('rooms', this)" class="btn btn-light rounded-pill px-4 tab-btn">Rooms</button>
-            <button onclick="switchTab('subjects', this)"
-                class="btn btn-light rounded-pill px-4 tab-btn">Subjects</button>
-            <button onclick="switchTab('groups', this)" class="btn btn-light rounded-pill px-4 tab-btn">Groups</button>
-            <button onclick="switchTab('generate', this)"
-                class="btn btn-warning rounded-pill px-4 tab-btn font-weight-bold ml-2">
-                <i class="fas fa-bolt mr-1"></i> Generate
-            </button>
+        <div class="col-lg-8 d-flex justify-content-lg-end">
+            <div class="bg-white p-1 rounded-pill shadow-sm d-flex border scroll-tabs pr-3">
+                <button onclick="switchTab('arch', this)"
+                    class="btn btn-primary rounded-pill px-4 tab-btn active">Architecture</button>
+                <button onclick="switchTab('faculty', this)"
+                    class="btn btn-light rounded-pill px-4 tab-btn">Faculty</button>
+                <button onclick="switchTab('rooms', this)"
+                    class="btn btn-light rounded-pill px-4 tab-btn">Rooms</button>
+                <button onclick="switchTab('subjects', this)"
+                    class="btn btn-light rounded-pill px-4 tab-btn">Subjects</button>
+                <button onclick="switchTab('groups', this)"
+                    class="btn btn-light rounded-pill px-4 tab-btn">Groups</button>
+                <button onclick="switchTab('generate', this)"
+                    class="btn btn-warning rounded-pill px-4 tab-btn font-weight-bold ml-2 mr-1">
+                    <i class="fas fa-bolt mr-1"></i> Generate
+                </button>
+            </div>
         </div>
     </div>
 
@@ -33,11 +37,11 @@
             <div class="col-lg-6">
                 <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
                     <div
-                        class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
-                        <h4 class="font-weight-bold mb-0"><i class="fas fa-university text-primary mr-2"></i>
+                        class="card-header bg-white p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center border-bottom-0">
+                        <h4 class="font-weight-bold mb-2 mb-md-0"><i class="fas fa-university text-primary mr-2"></i>
                             Departments</h4>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3"
+                        <div class="d-flex">
+                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3 mr-2"
                                 onclick="openImportModal('department')">
                                 <i class="fas fa-file-import mr-1"></i> Import
                             </button>
@@ -58,7 +62,7 @@
                             </div>
                         </form>
                     </div>
-                    <div class="px-4 pb-4">
+                    <div class="px-4 pb-4 table-responsive">
                         <table class="table table-hover mb-0" id="deptTable">
                             <tbody id="deptBody">
                                 {% for d in data.departments %}
@@ -82,11 +86,12 @@
             <div class="col-lg-6">
                 <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
                     <div
-                        class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
-                        <h4 class="font-weight-bold mb-0"><i class="fas fa-graduation-cap text-success mr-2"></i>
+                        class="card-header bg-white p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center border-bottom-0">
+                        <h4 class="font-weight-bold mb-2 mb-md-0"><i
+                                class="fas fa-graduation-cap text-success mr-2"></i>
                             Courses</h4>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-success btn-sm rounded-pill px-3"
+                        <div class="d-flex">
+                            <button class="btn btn-outline-success btn-sm rounded-pill px-3 mr-2"
                                 onclick="openImportModal('course')">
                                 <i class="fas fa-file-import mr-1"></i> Import
                             </button>
@@ -116,7 +121,7 @@
                             </div>
                         </form>
                     </div>
-                    <div class="px-4 pb-4">
+                    <div class="px-4 pb-4 table-responsive">
                         <table class="table table-hover mb-0" id="courseTable">
                             <tbody id="courseBody">
                                 {% for c in data.courses %}
@@ -145,10 +150,12 @@
     <!-- Faculty Tab -->
     <div id="faculty" class="tab-content animate-fade-in" style="display:none;">
         <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
-            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
-                <h4 class="font-weight-bold mb-0"><i class="fas fa-users text-primary mr-2"></i> Faculty Members</h4>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3"
+            <div
+                class="card-header bg-white p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-2 mb-md-0"><i class="fas fa-users text-primary mr-2"></i> Faculty Members
+                </h4>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3 mr-2"
                         onclick="openImportModal('faculty')">
                         <i class="fas fa-file-import mr-1"></i> Import CSV
                     </button>
@@ -227,10 +234,13 @@
     <!-- Groups Tab -->
     <div id="groups" class="tab-content animate-fade-in" style="display:none;">
         <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
-            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
-                <h4 class="font-weight-bold mb-0"><i class="fas fa-user-friends text-info mr-2"></i> Student Groups</h4>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-info btn-sm rounded-pill px-3" onclick="openImportModal('group')">
+            <div
+                class="card-header bg-white p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-2 mb-md-0"><i class="fas fa-user-friends text-info mr-2"></i> Student
+                    Groups</h4>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-info btn-sm rounded-pill px-3 mr-2"
+                        onclick="openImportModal('group')">
                         <i class="fas fa-file-import mr-1"></i> Import CSV
                     </button>
                     <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('groupForm')">
@@ -296,11 +306,14 @@
     </div>
     <div id="rooms" class="tab-content animate-fade-in" style="display:none;">
         <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
-            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
-                <h4 class="font-weight-bold mb-0"><i class="fas fa-door-open text-success mr-2"></i> Facilities & Rooms
+            <div
+                class="card-header bg-white p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-2 mb-md-0"><i class="fas fa-door-open text-success mr-2"></i> Facilities
+                    & Rooms
                 </h4>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="openImportModal('room')">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-success btn-sm rounded-pill px-3 mr-2"
+                        onclick="openImportModal('room')">
                         <i class="fas fa-file-import mr-1"></i> Import CSV
                     </button>
                     <button class="btn btn-info btn-sm rounded-pill px-3" onclick="toggleForm('roomForm')">
@@ -381,11 +394,13 @@
     <!-- Subjects Tab -->
     <div id="subjects" class="tab-content animate-fade-in" style="display:none;">
         <div class="card border-0 shadow-md rounded-2xl overflow-hidden mb-4">
-            <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center border-bottom-0">
-                <h4 class="font-weight-bold mb-0"><i class="fas fa-book-open text-warning mr-2"></i> Subject Catalog
+            <div
+                class="card-header bg-white p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center border-bottom-0">
+                <h4 class="font-weight-bold mb-2 mb-md-0"><i class="fas fa-book-open text-warning mr-2"></i> Subject
+                    Catalog
                 </h4>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-warning btn-sm rounded-pill px-3"
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-warning btn-sm rounded-pill px-3 mr-2"
                         onclick="openImportModal('subject')">
                         <i class="fas fa-file-import mr-1"></i> Import CSV
                     </button>
@@ -687,15 +702,42 @@
         }
     }
 
-    #previewTable td {
-        padding: 0.5rem;
-        vertical-align: middle;
-    }
-
     .editable-cell:focus {
         background-color: #fff;
         outline: 2px solid #3b82f6;
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .scroll-tabs {
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    @media (min-width: 992px) {
+        .scroll-tabs {
+            overflow-x: visible;
+            white-space: normal;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            border-radius: 50px;
+        }
+    }
+
+    .scroll-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .tab-btn {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            font-size: 0.85rem;
+        }
     }
 </style>
 
@@ -718,10 +760,17 @@
 
         document.querySelectorAll('.tab-btn').forEach(b => {
             b.classList.remove('btn-primary', 'active');
-            b.classList.add('btn-light');
+            if (!b.classList.contains('btn-warning')) {
+                b.classList.add('btn-light');
+            }
         });
-        btn.classList.remove('btn-light');
-        btn.classList.add('btn-primary', 'active');
+
+        if (btn.classList.contains('btn-warning')) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('btn-light');
+            btn.classList.add('btn-primary', 'active');
+        }
     }
 
     function showSkeleton(container) {
