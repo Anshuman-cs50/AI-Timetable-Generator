@@ -19,9 +19,12 @@ A powerful, automatic timetable generation system built with **Flask** and **Goo
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Python, Flask, SQLAlchemy (SQLite/Postgres)
-- **AI Solver**: Google OR-Tools (CP-SAT)
-- **Frontend**: HTML5, Vanilla CSS, JavaScript (jQuery)
+- **Backend**: Python, Flask, SQLAlchemy
+- **AI Solver**: Google OR-Tools (CP-SAT Solver)
+- **Database**: Supabase (PostgreSQL Production), SQLite (Local Development)
+- **Frontend**: HTML5, Vanilla CSS, JavaScript (jQuery), Lucide & FontAwesome Icons
+- **Environment Management**: `python-dotenv` for local `.env` configuration
+- **Deployment**: Vercel (Serverless Functions)
 - **Authentication**: Flask-Login
 
 ## 📦 Installation & Setup
