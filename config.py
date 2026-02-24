@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
     # Use DATABASE_URL for Supabase/Heroku/Vercel, fallback to SQLite locally

@@ -10,7 +10,7 @@ def solve_timetable(subjects, groups, rooms, faculties, time_slots, config=None)
             'MAX_HOURS_PENALTY': 500,
             'CONSECUTIVE_PENALTY': 10,
             'SAME_DAY_MULTI_PENALTY': 10,
-            'LECTURES_IN_LABS': True,
+            'LECTURES_IN_LABS': False,
             'MAX_CONSECUTIVE_LECTURES': 3
         }
 

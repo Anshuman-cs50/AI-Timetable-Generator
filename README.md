@@ -38,12 +38,14 @@ A powerful, automatic timetable generation system built with **Flask** and **Goo
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. **Install dependencies**:
+4. **Configure Environment Variables**:
+   Copy the example environment file and update it with your settings:
    ```bash
-   pip install -r requirements.txt
+   cp .env.example .env
+   # Edit .env and set your SECRET_KEY and DATABASE_URL
    ```
 
-4. **Initialize the Database**:
+5. **Initialize the Database**:
    ```bash
    # The application will automatically create instance/timetable.db on first run
    python app.py
